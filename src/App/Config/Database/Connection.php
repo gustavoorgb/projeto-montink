@@ -19,12 +19,12 @@ final class Connection {
                 $user = getenv('DB_USER');
                 $pass = getenv('DB_PASS');
                 $dbName = getenv('DB_NAME');
-
-                self::$conn = new PDO("mysql:host=$host;dbname=$dbName", $user, $pass);
+                $port = getenv('DB_PORT') ?: 3306;
+                self::$conn = new PDO("mysql:host=$host;port=$port;dbname=$dbName", $user, $pass);
                 self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 self::$conn->exec("SET NAMES utf8mb4");
             } catch (PDOException $e) {
-                die("Erro ao conectar ao banco de dados" . $e->getMessage());
+                throw new \RuntimeException("Erro ao conectar ao banco de dados" . $e->getMessage(), 500, $e);
             }
         }
         return self::$conn;
